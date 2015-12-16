@@ -4,6 +4,7 @@ I demo repository for exploring maps on Android.
 
 To use the repository you will need to create a google maps API key. Create `google_maps_api.xml` file in app/src/release/res/values and app/src/debug/res/values.
 
+```
 <resources>
     <!--
     TODO: Before you run your application, you need a Google Maps API key.
@@ -23,3 +24,4 @@ To use the repository you will need to create a google maps API key. Create `goo
     -->
     <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">YOUR KEY</string>
 </resources>
+```
