@@ -23,6 +23,8 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         com.google.android.gms.location.LocationListener {
@@ -32,6 +34,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location mLastLocation;
     private boolean mDidStartLocationUpdates = false;
     private boolean mDidZoomToCurrentLocation = false;
+
+    private double mCircleRadiusMeters = 90;
 
     private static final String[] INITIAL_PERMS={
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -49,22 +53,68 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         createGoogleApiClient();
     }
 
-    // Markers
+    // Reach position detector
     // ----------------------
 
-    private void createShapes() {
-        LatLng latLng = new LatLng(-37.859621, 144.977781);
+    void checkReachedPosition(Location location) {
+        WalkPosition position = reachedPosition(location, mCircleRadiusMeters);
+        if (position == null) { return; }
+        if (position.reached) { return; }
+        position.reached = true;
+        sendNotification("Reached circle: " + position.name);
+    }
 
-        // Instantiates a new CircleOptions object and defines the center and radius
+    WalkPosition reachedPosition(Location userLocation, double distance) {
+        for(WalkPosition position: walkPositions) {
+            Location circleLocation = new Location("any string");
+            circleLocation.setLatitude(position.latLng.latitude);
+            circleLocation.setLongitude(position.latLng.longitude);
+
+            if (circleLocation.distanceTo(userLocation) < distance) {
+                return position;
+            }
+        }
+
+        return null;
+    }
+
+    void sendNotification(String text) {
+        
+    }
+
+    // Create markers
+    // ----------------------
+
+    ArrayList<WalkPosition> walkPositions = new ArrayList<WalkPosition>();
+
+    private void createMarkers() {
+        walkPositions.add(
+                new WalkPosition("Grey/Fitzroy intersection", new LatLng(-37.859686, 144.977517))
+        );
+
+        walkPositions.add(
+                new WalkPosition("House on Dalgety", new LatLng(-37.860610, 144.978924))
+        );
+
+        walkPositions.add(
+                new WalkPosition("House on Fitzroy", new LatLng(-37.858986, 144.979785))
+        );
+
+        for(WalkPosition position: walkPositions) {
+            createMarker(position);
+        }
+    }
+
+    void createMarker(WalkPosition position) {
         CircleOptions circleOptions = new CircleOptions()
-                .center(latLng)
+                .center(position.latLng)
                 .fillColor(Color.parseColor("#33A4AFFF"))
                 .strokeColor(Color.parseColor("#A4AFFF"))
                 .strokeWidth(3)
-                .radius(90); // In meters
+                .radius(mCircleRadiusMeters); // In meters
 
         // Add a marker
-        mMap.addMarker(new MarkerOptions().position(latLng));
+        mMap.addMarker(new MarkerOptions().position(position.latLng).title(position.name));
 
         // Get back the mutable Circle
         Circle circle = mMap.addCircle(circleOptions);
@@ -163,7 +213,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
 
-        createShapes();
+        createMarkers();
     }
 
     // Google API client
@@ -230,5 +280,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
+        checkReachedPosition(location);
     }
 }
