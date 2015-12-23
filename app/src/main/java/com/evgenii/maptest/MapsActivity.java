@@ -37,6 +37,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private double mCircleRadiusMeters = 90;
 
+    private WalkNotification walkNotification = new WalkNotification();
+
     private static final String[] INITIAL_PERMS={
             Manifest.permission.ACCESS_FINE_LOCATION,
     };
@@ -61,7 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (position == null) { return; }
         if (position.reached) { return; }
         position.reached = true;
-        sendNotification("Reached circle: " + position.name);
+        walkNotification.sendNotification("Reached circle", position.name, this);
     }
 
     WalkPosition reachedPosition(Location userLocation, double distance) {
@@ -76,10 +78,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         return null;
-    }
-
-    void sendNotification(String text) {
-        
     }
 
     // Create markers
