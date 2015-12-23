@@ -131,6 +131,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
         zoomToCurrentLocation();
     }
@@ -157,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .radius(90); // In meters
 
         // Add a marker
-        mMap.addMarker(new MarkerOptions().position(latLng).title("Walk to circle"));
+        mMap.addMarker(new MarkerOptions().position(latLng));
 
         // Get back the mutable Circle
         Circle circle = mMap.addCircle(circleOptions);
