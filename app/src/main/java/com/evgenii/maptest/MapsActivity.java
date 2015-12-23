@@ -31,6 +31,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private boolean mDidStartLocationUpdates = false;
+    private boolean mDidZoomToCurrentLocation = false;
 
     private static final String[] INITIAL_PERMS={
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -48,15 +49,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         createGoogleApiClient();
     }
 
-    private void zoomToCurrentLocation() {
-        if (mLastLocation == null) { return; }
-
-        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
-
-        createShapes();
-    }
+    // Markers
+    // ----------------------
 
     private void createShapes() {
         LatLng latLng = new LatLng(-37.859621, 144.977781);
@@ -74,18 +68,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Get back the mutable Circle
         Circle circle = mMap.addCircle(circleOptions);
-    }
-
-    protected void startLocationUpdates() {
-        if (mDidStartLocationUpdates) { return; }
-        mDidStartLocationUpdates = true;
-
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
 
     // Permissions
@@ -110,14 +92,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switch(requestCode) {
 
             case LOCALTION_REQUEST:
-                if (hasLocationPermission()) {
-                    enableMyLocation();
-                    startLocationUpdates();
-                    zoomToCurrentLocation();
-                }
-                else {
+                enableMyLocationZoomAndStartLocationUpdates();
+
+                if (!hasLocationPermission()) {
                     Toast.makeText(this, "Location denied", Toast.LENGTH_LONG).show();
                 }
+
                 break;
         }
     }
@@ -146,26 +126,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        enableMyLocationZoomAndStartLocationUpdates();
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+    }
 
+    void enableMyLocationZoomAndStartLocationUpdates() {
         if (hasLocationPermission()) {
             enableMyLocation();
+            getLastLocation();
+            zoomToCurrentLocation();
+            startLocationUpdates();
         }
-
-        mMap.getUiSettings().setMapToolbarEnabled(false);
-
-        zoomToCurrentLocation();
     }
+
+    // My location
+    // ----------------------
 
     void enableMyLocation() {
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        getLastLocation();
     }
 
     void getLastLocation() {
         if (mGoogleApiClient.isConnected()) {
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         }
+    }
+
+    private void zoomToCurrentLocation() {
+        if (mLastLocation == null) { return; }
+
+        if (mDidZoomToCurrentLocation) { return; } // Zoom only once
+        mDidZoomToCurrentLocation = true;
+
+        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+
+        createShapes();
     }
 
     // Google API client
@@ -191,15 +189,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    @Override
     // GoogleApiClient.ConnectionCallbacks
-    public void onConnected(Bundle connectionHint) {
-        getLastLocation();
-        zoomToCurrentLocation();
+    // ----------------------
 
-        if (hasLocationPermission()) {
-            startLocationUpdates();
-        }
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        enableMyLocationZoomAndStartLocationUpdates();
     }
 
     @Override
@@ -214,9 +209,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    // com.google.android.gms.location.LocationListener
+    // Location updates
     // ----------------------
 
+    protected void startLocationUpdates() {
+        if (!mGoogleApiClient.isConnected()) { return; }
+
+        if (mDidStartLocationUpdates) { return; } // Start location updates once
+        mDidStartLocationUpdates = true;
+
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    // com.google.android.gms.location.LocationListener
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
