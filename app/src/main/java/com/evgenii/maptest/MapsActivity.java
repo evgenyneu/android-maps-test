@@ -1,6 +1,7 @@
 package com.evgenii.maptest;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -8,8 +9,10 @@ import android.os.Build;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.evgenii.maptest.Utils.WalkLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -24,6 +27,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -32,10 +37,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
-    private boolean mDidStartLocationUpdates = false;
     private boolean mDidZoomToCurrentLocation = false;
-
-    private double mCircleRadiusMeters = 90;
 
     private WalkNotification walkNotification = new WalkNotification();
 
@@ -55,48 +57,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         createGoogleApiClient();
     }
 
-    // Reach position detector
-    // ----------------------
-
-    void checkReachedPosition(Location location) {
-        WalkPosition position = reachedPosition(location, mCircleRadiusMeters);
-        if (position == null) { return; }
-        if (position.reached) { return; }
-        position.reached = true;
-        walkNotification.sendNotification("Reached circle", position.name, this);
-    }
-
-    WalkPosition reachedPosition(Location userLocation, double distance) {
-        for(WalkPosition position: walkPositions) {
-            Location circleLocation = new Location("any string");
-            circleLocation.setLatitude(position.latLng.latitude);
-            circleLocation.setLongitude(position.latLng.longitude);
-
-            if (circleLocation.distanceTo(userLocation) < distance) {
-                return position;
-            }
-        }
-
-        return null;
-    }
-
     // Create markers
     // ----------------------
 
-    ArrayList<WalkPosition> walkPositions = new ArrayList<WalkPosition>();
-
     private void createMarkers() {
-        walkPositions.add(
-                new WalkPosition("Grey/Fitzroy intersection", new LatLng(-37.859686, 144.977517))
-        );
-
-        walkPositions.add(
-                new WalkPosition("House on Dalgety", new LatLng(-37.860610, 144.978924))
-        );
-
-        walkPositions.add(
-                new WalkPosition("House on Fitzroy", new LatLng(-37.858986, 144.979785))
-        );
+        ArrayList<WalkPosition> walkPositions = WalkLocationService.getInstance().getPositions();
 
         for(WalkPosition position: walkPositions) {
             createMarker(position);
@@ -109,7 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .fillColor(Color.parseColor("#33A4AFFF"))
                 .strokeColor(Color.parseColor("#A4AFFF"))
                 .strokeWidth(3)
-                .radius(mCircleRadiusMeters); // In meters
+                .radius(WalkConstants.mCircleRadiusMeters); // In meters
 
         // Add a marker
         mMap.addMarker(new MarkerOptions().position(position.latLng).title(position.name));
@@ -263,9 +228,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void startLocationUpdates() {
         if (!mGoogleApiClient.isConnected()) { return; }
 
-        if (mDidStartLocationUpdates) { return; } // Start location updates once
-        mDidStartLocationUpdates = true;
-
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
@@ -278,6 +240,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
-        checkReachedPosition(location);
+        WalkLocationService.getInstance().checkReachedPosition(location);
     }
 }
+

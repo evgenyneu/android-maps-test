@@ -5,18 +5,27 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 
 public class WalkNotification {
 
     public int mId = 1;
 
-    void sendNotification(String title, String text, Context context) {
+    void sendNotification(String title, String text) {
+        Context context = WalkApplication.getAppContext();
+
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.yellow_star)
                         .setContentTitle(title)
-                        .setContentText(text);
+                        .setContentText(text)
+                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                        .setVibrate(new long[]{
+                                0, 100,
+                                100, 200,
+                                100, 200,
+                                100, 200});
 
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(context, MapsActivity.class);
