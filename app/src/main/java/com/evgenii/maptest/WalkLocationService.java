@@ -34,6 +34,5 @@ public class WalkLocationService implements
     @Override
     public void onLocationChanged(Location location) {
         WalkLocationeDetector.getInstance().checkReachedPosition(location);
-        Log.d("ii", "onLocationChanged");
     }
 }
