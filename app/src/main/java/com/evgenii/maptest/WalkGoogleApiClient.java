@@ -20,8 +20,7 @@ public class WalkGoogleApiClient implements GoogleApiClient.ConnectionCallbacks,
         return ourInstance;
     }
 
-    public Runnable onConnectedCallbackForLocationUpdates;
-    public Runnable onConnectedCallbackForMap;
+    public Runnable didConnectCallback;
 
     private WalkGoogleApiClient() {
     }
@@ -50,11 +49,8 @@ public class WalkGoogleApiClient implements GoogleApiClient.ConnectionCallbacks,
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        if (onConnectedCallbackForLocationUpdates == null) { return; }
-        onConnectedCallbackForLocationUpdates.run();
-
-        if (onConnectedCallbackForMap == null) { return; }
-        onConnectedCallbackForMap.run();
+        if (didConnectCallback == null) { return; }
+        didConnectCallback.run();
     }
 
     @Override

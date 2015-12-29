@@ -38,12 +38,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         registerApiClientCallback();
+        registerLocationPermissionCallback();
         initMap();
         WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
     }
 
     private void registerApiClientCallback() {
-        WalkGoogleApiClient.getInstance().onConnectedCallbackForMap = new Runnable() {
+        WalkGoogleApiClient.getInstance().didConnectCallback = new Runnable() {
+            @Override
+            public void run() {
+                enableMyLocationZoomAndStartLocationUpdates();
+            }
+        };
+    }
+
+    private void registerLocationPermissionCallback() {
+        WalkLocationPermissions.getInstance().didGrantCallback = new Runnable() {
             @Override
             public void run() {
                 enableMyLocationZoomAndStartLocationUpdates();
@@ -118,6 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             enableMyLocation();
             getLastLocation();
             zoomToCurrentLocation();
+            WalkLocationService.getInstance().startLocationUpdates();
         }
     }
 

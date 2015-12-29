@@ -1,6 +1,7 @@
 package com.evgenii.maptest;
 
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -18,6 +19,7 @@ public class WalkLocationService implements
 
     protected void startLocationUpdates() {
         if (!WalkGoogleApiClient.isConnected()) { return; }
+        if (!WalkLocationPermissions.getInstance().hasLocationPermission()) { return; }
 
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
@@ -32,5 +34,6 @@ public class WalkLocationService implements
     @Override
     public void onLocationChanged(Location location) {
         WalkLocationeDetector.getInstance().checkReachedPosition(location);
+        Log.d("ii", "onLocationChanged");
     }
 }

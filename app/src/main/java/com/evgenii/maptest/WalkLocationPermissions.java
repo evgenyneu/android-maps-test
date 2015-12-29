@@ -23,6 +23,8 @@ public class WalkLocationPermissions {
     private WalkLocationPermissions() {
     }
 
+    public Runnable didGrantCallback;
+
     public void requestLocationPermissionIfNotGranted(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!hasLocationPermission()) {
@@ -40,10 +42,10 @@ public class WalkLocationPermissions {
         switch(requestCode) {
             case LOCALTION_REQUEST:
                 if (hasLocationPermission()) {
-
+                    if (didGrantCallback != null) {
+                        didGrantCallback.run();
+                    }
                 }
-
-                //enableMyLocationZoomAndStartLocationUpdates();
 
                 break;
         }
