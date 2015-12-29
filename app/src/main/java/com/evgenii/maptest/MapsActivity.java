@@ -1,7 +1,6 @@
 package com.evgenii.maptest;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -9,10 +8,8 @@ import android.os.Build;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.evgenii.maptest.Utils.WalkLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -27,26 +24,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        com.google.android.gms.location.LocationListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private boolean mDidZoomToCurrentLocation = false;
 
     private WalkNotification walkNotification = new WalkNotification();
-
-    private static final String[] INITIAL_PERMS={
-            Manifest.permission.ACCESS_FINE_LOCATION,
-    };
-
-    private static final int INITIAL_REQUEST=1337;
-    private static final int LOCALTION_REQUEST=INITIAL_REQUEST+1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,14 +39,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         initMap();
         requestLocationPermissionIfNotGranted();
-        createGoogleApiClient();
+    }
+
+    protected void onStart() {
+        super.onStart();
+    }
+
+    protected void onStop() {
+        super.onStop();
     }
 
     // Create markers
     // ----------------------
 
     private void createMarkers() {
-        ArrayList<WalkPosition> walkPositions = WalkLocationService.getInstance().getPositions();
+        ArrayList<WalkPosition> walkPositions = WalkLocationeDetector.getInstance().getPositions();
 
         for(WalkPosition position: walkPositions) {
             createMarker(position);
@@ -81,38 +73,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Get back the mutable Circle
         Circle circle = mMap.addCircle(circleOptions);
-    }
-
-    // Permissions
-    // ----------------------
-
-    void requestLocationPermissionIfNotGranted() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!hasLocationPermission()) {
-                requestPermissions(INITIAL_PERMS, LOCALTION_REQUEST);
-            }
-        }
-    }
-
-    boolean hasLocationPermission() {
-        return ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
-        switch(requestCode) {
-
-            case LOCALTION_REQUEST:
-                enableMyLocationZoomAndStartLocationUpdates();
-
-                if (!hasLocationPermission()) {
-                    Toast.makeText(this, "Location denied", Toast.LENGTH_LONG).show();
-                }
-
-                break;
-        }
     }
 
     // Map
@@ -144,12 +104,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     void enableMyLocationZoomAndStartLocationUpdates() {
-        if (hasLocationPermission()) {
-            enableMyLocation();
-            getLastLocation();
-            zoomToCurrentLocation();
-            startLocationUpdates();
-        }
+//        if (hasLocationPermission()) {
+//            enableMyLocation();
+//            getLastLocation();
+//            zoomToCurrentLocation();
+//            startLocationUpdates();
+//        }
     }
 
     // My location
@@ -161,8 +121,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     void getLastLocation() {
-        if (mGoogleApiClient.isConnected()) {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (WalkGoogleApiClient.isConnected()) {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    WalkGoogleApiClient.getInstance().getClient());
         }
     }
 
@@ -177,70 +138,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
 
         createMarkers();
-    }
-
-    // Google API client
-    // ----------------------
-
-    protected void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
-
-    void createGoogleApiClient() {
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-    }
-
-    // GoogleApiClient.ConnectionCallbacks
-    // ----------------------
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        enableMyLocationZoomAndStartLocationUpdates();
-    }
-
-    @Override
-    public void onConnectionSuspended(int var1) {
-    }
-
-    // GoogleApiClient.OnConnectionFailedListener
-    // ----------------------
-
-    @Override
-    public void onConnectionFailed(ConnectionResult var1) {
-
-    }
-
-    // Location updates
-    // ----------------------
-
-    protected void startLocationUpdates() {
-        if (!mGoogleApiClient.isConnected()) { return; }
-
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-    }
-
-    // com.google.android.gms.location.LocationListener
-    @Override
-    public void onLocationChanged(Location location) {
-        mLastLocation = location;
-        WalkLocationService.getInstance().checkReachedPosition(location);
     }
 }
 

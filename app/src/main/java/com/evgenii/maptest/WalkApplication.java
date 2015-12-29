@@ -9,7 +9,9 @@ public class WalkApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
+
         WalkApplication.context = getApplicationContext();
+        WalkGoogleApiClient.getInstance().create();
     }
 
     public static Context getAppContext() {

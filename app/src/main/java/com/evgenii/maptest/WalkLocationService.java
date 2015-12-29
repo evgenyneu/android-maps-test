@@ -1,16 +1,12 @@
 package com.evgenii.maptest;
 
-import android.content.Context;
 import android.location.Location;
 
-import com.evgenii.maptest.Utils.WalkLocation;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
-import java.util.ArrayList;
-
-public class WalkLocationService {
-    private static ArrayList<WalkPosition> walkPositions = new ArrayList<WalkPosition>();
-
+public class WalkLocationService implements
+        com.google.android.gms.location.LocationListener {
     private static WalkLocationService ourInstance = new WalkLocationService();
 
     public static WalkLocationService getInstance() {
@@ -20,59 +16,21 @@ public class WalkLocationService {
     private WalkLocationService() {
     }
 
-    public ArrayList<WalkPosition> getPositions() {
-        if (walkPositions.size() == 0) {
-            walkPositions.add(
-                    new WalkPosition("Grey/Fitzroy intersection", new LatLng(-37.859686, 144.977517))
-            );
+    protected void startLocationUpdates() {
+        if (!WalkGoogleApiClient.isConnected()) { return; }
 
-            walkPositions.add(
-                    new WalkPosition("House on Dalgety", new LatLng(-37.860610, 144.978924))
-            );
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-            walkPositions.add(
-                    new WalkPosition("House on Fitzroy", new LatLng(-37.858986, 144.979785))
-            );
-        }
-
-        return walkPositions;
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                WalkGoogleApiClient.getInstance().getClient(), mLocationRequest, this);
     }
 
-    // Reach position detector
-    // ----------------------
-
-    void checkReachedPosition(Location location) {
-        final WalkPosition position = reachedPosition(location, WalkConstants.mCircleRadiusMeters);
-
-        clearReachedPositions(location,
-                WalkConstants.mCircleRadiusMeters + WalkConstants.mReachPositionVariationMeters);
-
-        if (position == null) { return; }
-        if (position.reached) { return; }
-        position.reached = true;
-        (new WalkNotification()).sendNotification("Reached circle", position.name);
+    // com.google.android.gms.location.LocationListener
+    @Override
+    public void onLocationChanged(Location location) {
+        WalkLocationeDetector.getInstance().checkReachedPosition(location);
     }
-
-    WalkPosition reachedPosition(Location userLocation, double distance) {
-        for(WalkPosition position: walkPositions) {
-            Location circleLocation = WalkLocation.locationFromLatLng(position.latLng);
-
-            if (circleLocation.distanceTo(userLocation) < distance) {
-                return position;
-            }
-        }
-
-        return null;
-    }
-
-    void clearReachedPositions(Location userLocation, double distance) {
-        for(WalkPosition position: walkPositions) {
-            Location circleLocation = WalkLocation.locationFromLatLng(position.latLng);
-
-            if (circleLocation.distanceTo(userLocation) > distance) {
-                position.reached = false;
-            }
-        }
-    }
-
 }
