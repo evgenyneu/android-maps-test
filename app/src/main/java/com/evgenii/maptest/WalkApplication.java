@@ -11,6 +11,14 @@ public class WalkApplication extends Application {
         super.onCreate();
 
         WalkApplication.context = getApplicationContext();
+
+        WalkGoogleApiClient.getInstance().onConnectedCallbackForLocationUpdates = new Runnable() {
+            @Override
+            public void run() {
+                WalkLocationService.getInstance().startLocationUpdates();
+            }
+        };
+
         WalkGoogleApiClient.getInstance().create();
     }
 

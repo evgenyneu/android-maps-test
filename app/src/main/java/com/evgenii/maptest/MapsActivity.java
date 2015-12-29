@@ -37,16 +37,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        registerApiClientCallback();
         initMap();
-        requestLocationPermissionIfNotGranted();
+        WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
     }
 
-    protected void onStart() {
-        super.onStart();
+    private void registerApiClientCallback() {
+        WalkGoogleApiClient.getInstance().onConnectedCallbackForMap = new Runnable() {
+            @Override
+            public void run() {
+                enableMyLocationZoomAndStartLocationUpdates();
+            }
+        };
     }
 
-    protected void onStop() {
-        super.onStop();
+    // Permissions
+    // ----------------------
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        WalkLocationPermissions.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     // Create markers
@@ -104,12 +114,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     void enableMyLocationZoomAndStartLocationUpdates() {
-//        if (hasLocationPermission()) {
-//            enableMyLocation();
-//            getLastLocation();
-//            zoomToCurrentLocation();
-//            startLocationUpdates();
-//        }
+        if (WalkLocationPermissions.getInstance().hasLocationPermission()) {
+            enableMyLocation();
+            getLastLocation();
+            zoomToCurrentLocation();
+        }
     }
 
     // My location

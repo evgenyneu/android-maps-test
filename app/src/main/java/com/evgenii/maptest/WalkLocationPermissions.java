@@ -1,10 +1,10 @@
 package com.evgenii.maptest;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
-import android.widget.Toast;
 
 public class WalkLocationPermissions {
     private static final String[] INITIAL_PERMS={
@@ -23,10 +23,10 @@ public class WalkLocationPermissions {
     private WalkLocationPermissions() {
     }
 
-    void requestLocationPermissionIfNotGranted() {
+    public void requestLocationPermissionIfNotGranted(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!hasLocationPermission()) {
-                requestPermissions(INITIAL_PERMS, LOCALTION_REQUEST);
+                activity.requestPermissions(INITIAL_PERMS, LOCALTION_REQUEST);
             }
         }
     }
@@ -36,16 +36,14 @@ public class WalkLocationPermissions {
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
-    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch(requestCode) {
-
             case LOCALTION_REQUEST:
-                enableMyLocationZoomAndStartLocationUpdates();
+                if (hasLocationPermission()) {
 
-                if (!hasLocationPermission()) {
-                    Toast.makeText(this, "Location denied", Toast.LENGTH_LONG).show();
                 }
+
+                //enableMyLocationZoomAndStartLocationUpdates();
 
                 break;
         }
