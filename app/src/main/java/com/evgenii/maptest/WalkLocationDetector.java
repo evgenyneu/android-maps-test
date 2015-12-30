@@ -7,16 +7,16 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
-public class WalkLocationeDetector {
+public class WalkLocationDetector {
     private static ArrayList<WalkPosition> walkPositions = new ArrayList<WalkPosition>();
 
-    private static WalkLocationeDetector ourInstance = new WalkLocationeDetector();
+    private static WalkLocationDetector ourInstance = new WalkLocationDetector();
 
-    public static WalkLocationeDetector getInstance() {
+    public static WalkLocationDetector getInstance() {
         return ourInstance;
     }
 
-    private WalkLocationeDetector() {
+    private WalkLocationDetector() {
     }
 
     public ArrayList<WalkPosition> getPositions() {

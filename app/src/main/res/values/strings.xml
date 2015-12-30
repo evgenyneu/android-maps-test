@@ -2,4 +2,7 @@
     <string name="app_name">MapTest</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_map_container">MapContainerActivity</string>
+    <string name="dialog_location_denied">"Walk to Circle" needs access to your location in order to notify you when you reach a circle on the map. Allow the app to receive location updates to continue.</string>
+    <string name="dialog_button_ok">OK</string>
+
 </resources>

@@ -24,6 +24,7 @@ public class WalkLocationPermissions {
     }
 
     public Runnable didGrantCallback;
+    public Runnable didDenyCallback;
 
     public void requestLocationPermissionIfNotGranted(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -44,6 +45,10 @@ public class WalkLocationPermissions {
                 if (hasLocationPermission()) {
                     if (didGrantCallback != null) {
                         didGrantCallback.run();
+                    }
+                } else {
+                    if (didDenyCallback != null) {
+                        didDenyCallback.run();
                     }
                 }
 

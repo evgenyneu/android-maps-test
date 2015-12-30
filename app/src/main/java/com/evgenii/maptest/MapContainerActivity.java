@@ -1,12 +1,11 @@
 package com.evgenii.maptest;
 
+import android.app.DialogFragment;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.google.android.gms.location.LocationServices;
@@ -22,6 +21,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 
 public class MapContainerActivity extends AppCompatActivity implements OnMapReadyCallback {
+
     private GoogleMap mMap;
     private Location mLastLocation;
     private boolean mDidZoomToCurrentLocation = false;
@@ -54,6 +54,20 @@ public class MapContainerActivity extends AppCompatActivity implements OnMapRead
                 enableMyLocationZoomAndStartLocationUpdates();
             }
         };
+
+        WalkLocationPermissions.getInstance().didDenyCallback = new Runnable() {
+            @Override
+            public void run() {
+                showLocationDeniedActivity();
+            }
+        };
+    }
+
+    public void didTapButton(View view) {
+        Intent intent = new Intent(this, LocationDeniedActivity.class);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finishAffinity();
     }
 
     // Permissions
@@ -64,11 +78,15 @@ public class MapContainerActivity extends AppCompatActivity implements OnMapRead
         WalkLocationPermissions.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    private void showLocationDeniedActivity() {
+
+    }
+
     // Create markers
     // ----------------------
 
     private void createMarkers() {
-        ArrayList<WalkPosition> walkPositions = WalkLocationeDetector.getInstance().getPositions();
+        ArrayList<WalkPosition> walkPositions = WalkLocationDetector.getInstance().getPositions();
 
         for(WalkPosition position: walkPositions) {
             createMarker(position);
@@ -131,12 +149,14 @@ public class MapContainerActivity extends AppCompatActivity implements OnMapRead
     // ----------------------
 
     void enableMyLocation() {
-        mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        if (mMap != null && WalkLocationPermissions.getInstance().hasLocationPermission()) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        }
     }
 
     void getLastLocation() {
-        if (WalkGoogleApiClient.isConnected()) {
+        if (WalkGoogleApiClient.isConnected() && WalkLocationPermissions.getInstance().hasLocationPermission()) {
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                     WalkGoogleApiClient.getInstance().getClient());
         }
@@ -144,6 +164,7 @@ public class MapContainerActivity extends AppCompatActivity implements OnMapRead
 
     private void zoomToCurrentLocation() {
         if (mLastLocation == null) { return; }
+        if (mMap == null) { return; }
 
         if (mDidZoomToCurrentLocation) { return; } // Zoom only once
         mDidZoomToCurrentLocation = true;
@@ -154,5 +175,4 @@ public class MapContainerActivity extends AppCompatActivity implements OnMapRead
 
         createMarkers();
     }
-
 }

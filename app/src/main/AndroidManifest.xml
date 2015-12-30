@@ -32,11 +32,14 @@
 
         <activity
             android:name=".MapContainerActivity"
-            android:label="@string/title_activity_map_container"
-            android:theme="@style/AppTheme">
+            android:label="@string/title_activity_map_container">
+        </activity>
+
+        <activity android:name=".LocationDeniedActivity" />
+
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
