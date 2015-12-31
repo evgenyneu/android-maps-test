@@ -1,9 +1,6 @@
 package com.evgenii.maptest;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.Intent;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,18 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class MainActivity extends AppCompatActivity {
-
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//
-//        Intent intent = new Intent(this, MapContainerActivity.class);
-//        startActivity(intent);
-//        overridePendingTransition(0, 0);
-//        finish();
-//    }
-
+    
     /**
      * Whether or not we're showing the back of the card (otherwise showing the front).
      */
@@ -50,12 +36,12 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment;
 
         if (mShowingBack) {
-            enterAnimation = R.animator.card_flip_left_in;
-            exitAnimation = R.animator.card_flip_left_out;
+            enterAnimation = R.animator.flip_top_in;
+            exitAnimation = R.animator.flip_top_out;
             fragment = new CardFrontFragment();
         } else {
-            enterAnimation = R.animator.card_flip_right_in;
-            exitAnimation = R.animator.card_flip_right_out;
+            enterAnimation = R.animator.flip_bottom_in;
+            exitAnimation = R.animator.flip_bottom_out;
             fragment = new CardBackFragment();
         }
 
