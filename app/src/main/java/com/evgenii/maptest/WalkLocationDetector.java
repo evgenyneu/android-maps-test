@@ -49,7 +49,7 @@ public class WalkLocationDetector {
         if (position == null) { return; }
         if (position.reached) { return; }
         position.reached = true;
-        (new WalkNotification()).sendNotification("Reached circle", position.name);
+        //(new WalkNotification()).sendNotification("Reached circle", position.name);
     }
 
     WalkPosition reachedPosition(Location userLocation, double distance) {
