@@ -47,21 +47,15 @@ public class MainActivity extends AppCompatActivity {
     private void flipCard() {
         int enterAnimation;
         int exitAnimation;
-        int enterAnimationPop;
-        int exitAnimationPop;
         Fragment fragment;
 
         if (mShowingBack) {
             enterAnimation = R.animator.card_flip_left_in;
             exitAnimation = R.animator.card_flip_left_out;
-            enterAnimationPop = R.animator.card_flip_right_in;
-            exitAnimationPop = R.animator.card_flip_right_out;
             fragment = new CardFrontFragment();
         } else {
             enterAnimation = R.animator.card_flip_right_in;
             exitAnimation = R.animator.card_flip_right_out;
-            enterAnimationPop = R.animator.card_flip_left_in;
-            exitAnimationPop = R.animator.card_flip_left_out;
             fragment = new CardBackFragment();
         }
 
@@ -69,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         getFragmentManager()
             .beginTransaction()
-            .setCustomAnimations(enterAnimation, exitAnimation, enterAnimationPop, exitAnimationPop)
+            .setCustomAnimations(enterAnimation, exitAnimation, 0, 0)
             .replace(R.id.container, fragment)
             .commit();
     }
