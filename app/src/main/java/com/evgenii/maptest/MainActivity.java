@@ -8,21 +8,23 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class MainActivity extends AppCompatActivity {
-    
+
     /**
      * Whether or not we're showing the back of the card (otherwise showing the front).
      */
-    private boolean mShowingBack = false;
+    private static boolean mShowingBack = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getFragmentManager()
-                .beginTransaction()
-                .add(R.id.container, new CardFrontFragment())
-                .commit();
+        if (savedInstanceState == null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.container, new CardFrontFragment())
+                    .commit();
+        }
 
     }
 
