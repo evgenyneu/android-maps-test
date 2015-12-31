@@ -84,7 +84,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_card_front, container, false);
+            View view = inflater.inflate(R.layout.fragment_card_front, container, false);
+
+            float scale = getResources().getDisplayMetrics().density;
+            view.setCameraDistance(3000 * scale);
+            return view;
         }
     }
 
@@ -98,7 +102,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_card_back, container, false);
+            View view = inflater.inflate(R.layout.fragment_card_back, container, false);
+
+            float scale = getResources().getDisplayMetrics().density;
+            view.setCameraDistance(3000 * scale);
+            return view;
         }
     }
 }
