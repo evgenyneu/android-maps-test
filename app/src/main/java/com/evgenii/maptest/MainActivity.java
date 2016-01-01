@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.evgenii.maptest.Utils.WalkCameraDistance;
+import com.evgenii.maptest.Utils.WalkLocation;
+
 public class MainActivity extends AppCompatActivity {
 
     /**
@@ -22,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getFragmentManager()
                     .beginTransaction()
-                    .add(R.id.container, new MapContainerFragment())
+                    .add(R.id.container, new WalkMapFragment())
                     .commit();
         }
 
@@ -36,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         WalkGoogleApiClient.getInstance().didConnectCallback = new Runnable() {
             @Override
             public void run() {
-                //enableMyLocationZoomAndStartLocationUpdates();
+                reloadMap();
+                WalkLocationService.getInstance().startLocationUpdates();
             }
         };
     }
@@ -45,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
         WalkLocationPermissions.getInstance().didGrantCallback = new Runnable() {
             @Override
             public void run() {
-                //enableMyLocationZoomAndStartLocationUpdates();
+                reloadMap();
+                WalkLocationService.getInstance().startLocationUpdates();
             }
         };
 
@@ -55,6 +60,23 @@ public class MainActivity extends AppCompatActivity {
                 showLocationDeniedActivity();
             }
         };
+    }
+
+
+    // Map
+    // ----------------------
+
+    void reloadMap() {
+        WalkMapFragment map = getMapFragment();
+        if (map != null) {
+            map.enableMyLocationAndZoom();
+        }
+    }
+
+    WalkMapFragment getMapFragment() {
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.container);
+        if (fragment instanceof WalkMapFragment) { return (WalkMapFragment)fragment; }
+        return null;
     }
 
     // Permissions
@@ -81,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         if (mShowingBack) {
             enterAnimation = R.animator.flip_top_in;
             exitAnimation = R.animator.flip_top_out;
-            fragment = new MapContainerFragment();
+            fragment = new WalkMapFragment();
         } else {
             enterAnimation = R.animator.flip_bottom_in;
             exitAnimation = R.animator.flip_bottom_out;
@@ -98,24 +120,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * A fragment representing the front of the card.
-     */
-//    public static class CardFrontFragment extends Fragment {
-//        public CardFrontFragment() {
-//        }
-//
-//        @Override
-//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                                 Bundle savedInstanceState) {
-//            View view = inflater.inflate(R.layout.fragment_card_front, container, false);
-//
-//            float scale = getResources().getDisplayMetrics().density;
-//            view.setCameraDistance(3000 * scale);
-//            return view;
-//        }
-//    }
-
-    /**
      * A fragment representing the back of the card.
      */
     public static class CardBackFragment extends Fragment {
@@ -126,9 +130,7 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_card_back, container, false);
-
-            float scale = getResources().getDisplayMetrics().density;
-            view.setCameraDistance(3000 * scale);
+            WalkCameraDistance.setFragmentCameraDistance(view);
             return view;
         }
     }
