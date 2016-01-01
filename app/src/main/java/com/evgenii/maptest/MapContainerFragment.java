@@ -1,18 +1,18 @@
 package com.evgenii.maptest;
 
-import android.app.DialogFragment;
-import android.content.Intent;
+import android.app.Fragment;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -20,66 +20,24 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-public class MapContainerActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapContainerFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private Location mLastLocation;
     private boolean mDidZoomToCurrentLocation = false;
 
-    private WalkNotification walkNotification = new WalkNotification();
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map_container);
-        registerApiClientCallback();
-        registerLocationPermissionCallback();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.map_fragment, container, false);
         initMap();
-        WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
-    }
-
-    private void registerApiClientCallback() {
-        WalkGoogleApiClient.getInstance().didConnectCallback = new Runnable() {
-            @Override
-            public void run() {
-                enableMyLocationZoomAndStartLocationUpdates();
-            }
-        };
-    }
-
-    private void registerLocationPermissionCallback() {
-        WalkLocationPermissions.getInstance().didGrantCallback = new Runnable() {
-            @Override
-            public void run() {
-                enableMyLocationZoomAndStartLocationUpdates();
-            }
-        };
-
-        WalkLocationPermissions.getInstance().didDenyCallback = new Runnable() {
-            @Override
-            public void run() {
-                showLocationDeniedActivity();
-            }
-        };
+        return view;
     }
 
     public void didTapButton(View view) {
-        Intent intent = new Intent(this, LocationDeniedActivity.class);
+        //Intent intent = new Intent(this, LocationDeniedActivity.class);
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        //startActivity(intent);
         //finishAffinity();
-    }
-
-    // Permissions
-    // ----------------------
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        WalkLocationPermissions.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    private void showLocationDeniedActivity() {
-
     }
 
     // Create markers
@@ -112,8 +70,7 @@ public class MapContainerActivity extends AppCompatActivity implements OnMapRead
     // ----------------------
 
     void initMap() {
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        MapFragment mapFragment = (MapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
@@ -132,16 +89,14 @@ public class MapContainerActivity extends AppCompatActivity implements OnMapRead
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        enableMyLocationZoomAndStartLocationUpdates();
+        enableMyLocationAndZoom();
         mMap.getUiSettings().setMapToolbarEnabled(false);
     }
 
-    void enableMyLocationZoomAndStartLocationUpdates() {
+    void enableMyLocationAndZoom() {
         if (WalkLocationPermissions.getInstance().hasLocationPermission()) {
             enableMyLocation();
-            getLastLocation();
             zoomToCurrentLocation();
-            WalkLocationService.getInstance().startLocationUpdates();
         }
     }
 
@@ -155,21 +110,25 @@ public class MapContainerActivity extends AppCompatActivity implements OnMapRead
         }
     }
 
-    void getLastLocation() {
+    private static Location getLastLocation() {
         if (WalkGoogleApiClient.isConnected() && WalkLocationPermissions.getInstance().hasLocationPermission()) {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+            return LocationServices.FusedLocationApi.getLastLocation(
                     WalkGoogleApiClient.getInstance().getClient());
         }
+
+        return null;
     }
 
     private void zoomToCurrentLocation() {
-        if (mLastLocation == null) { return; }
+        Location lastLocation = getLastLocation();
+
+        if (lastLocation == null) { return; }
         if (mMap == null) { return; }
 
         if (mDidZoomToCurrentLocation) { return; } // Zoom only once
         mDidZoomToCurrentLocation = true;
 
-        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
 

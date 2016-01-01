@@ -22,9 +22,50 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getFragmentManager()
                     .beginTransaction()
-                    .add(R.id.container, new CardFrontFragment())
+                    .add(R.id.container, new MapContainerFragment())
                     .commit();
         }
+
+        registerApiClientCallback();
+        registerLocationPermissionCallback();
+        WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
+
+    }
+
+    private void registerApiClientCallback() {
+        WalkGoogleApiClient.getInstance().didConnectCallback = new Runnable() {
+            @Override
+            public void run() {
+                //enableMyLocationZoomAndStartLocationUpdates();
+            }
+        };
+    }
+
+    private void registerLocationPermissionCallback() {
+        WalkLocationPermissions.getInstance().didGrantCallback = new Runnable() {
+            @Override
+            public void run() {
+                //enableMyLocationZoomAndStartLocationUpdates();
+            }
+        };
+
+        WalkLocationPermissions.getInstance().didDenyCallback = new Runnable() {
+            @Override
+            public void run() {
+                showLocationDeniedActivity();
+            }
+        };
+    }
+
+    // Permissions
+    // ----------------------
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        WalkLocationPermissions.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void showLocationDeniedActivity() {
 
     }
 
@@ -40,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         if (mShowingBack) {
             enterAnimation = R.animator.flip_top_in;
             exitAnimation = R.animator.flip_top_out;
-            fragment = new CardFrontFragment();
+            fragment = new MapContainerFragment();
         } else {
             enterAnimation = R.animator.flip_bottom_in;
             exitAnimation = R.animator.flip_bottom_out;
@@ -59,20 +100,20 @@ public class MainActivity extends AppCompatActivity {
     /**
      * A fragment representing the front of the card.
      */
-    public static class CardFrontFragment extends Fragment {
-        public CardFrontFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_card_front, container, false);
-
-            float scale = getResources().getDisplayMetrics().density;
-            view.setCameraDistance(3000 * scale);
-            return view;
-        }
-    }
+//    public static class CardFrontFragment extends Fragment {
+//        public CardFrontFragment() {
+//        }
+//
+//        @Override
+//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                                 Bundle savedInstanceState) {
+//            View view = inflater.inflate(R.layout.fragment_card_front, container, false);
+//
+//            float scale = getResources().getDisplayMetrics().density;
+//            view.setCameraDistance(3000 * scale);
+//            return view;
+//        }
+//    }
 
     /**
      * A fragment representing the back of the card.

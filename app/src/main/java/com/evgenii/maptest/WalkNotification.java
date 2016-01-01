@@ -28,7 +28,7 @@ public class WalkNotification {
                                 100, 200});
 
         // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(context, MapContainerActivity.class);
+        Intent resultIntent = new Intent(context, MapContainerFragment.class);
 
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
@@ -37,7 +37,7 @@ public class WalkNotification {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
 
         // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(MapContainerActivity.class);
+        stackBuilder.addParentStack(MapContainerFragment.class);
 
         // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(resultIntent);
