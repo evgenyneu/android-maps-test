@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (resultCode == ConnectionResult.SERVICE_MISSING ||
                 resultCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||
                 resultCode == ConnectionResult.SERVICE_DISABLED) {
+
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(this, resultCode, 1);
             dialog.show();
         }
