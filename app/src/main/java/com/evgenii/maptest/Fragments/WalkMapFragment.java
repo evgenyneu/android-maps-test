@@ -1,10 +1,15 @@
-package com.evgenii.maptest;
-
+package com.evgenii.maptest.Fragments;
+import com.evgenii.maptest.R;
+import com.evgenii.maptest.WalkConstants;
+import com.evgenii.maptest.WalkGoogleApiClient;
+import com.evgenii.maptest.WalkLocationDetector;
+import com.evgenii.maptest.WalkLocationPermissions;
+import com.evgenii.maptest.WalkPosition;
+import com.google.android.gms.maps.GoogleMap;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +17,6 @@ import android.view.ViewGroup;
 import com.evgenii.maptest.Utils.WalkCameraDistance;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -37,7 +40,7 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public void didTapButton(View view) {
-        //Intent intent = new Intent(this, LocationDeniedActivity.class);
+        //Intent intent = new Intent(this, LocationDeeniedActivity.class);
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         //startActivity(intent);
         //finishAffinity();

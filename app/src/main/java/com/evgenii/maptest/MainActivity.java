@@ -2,27 +2,21 @@ package com.evgenii.maptest;
 
 import android.app.Dialog;
 import android.app.Fragment;
-import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.evgenii.maptest.Fragments.WalkLocationDeniedFragment;
+import com.evgenii.maptest.Fragments.WalkMapFragment;
 import com.evgenii.maptest.Utils.WalkCameraDistance;
-import com.evgenii.maptest.Utils.WalkGooglePlayServices;
-import com.evgenii.maptest.Utils.WalkLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    /**
-     * Whether or not we're showing the back of the card (otherwise showing the front).
-     */
-    private static boolean mShowingBack = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     WalkMapFragment getMapFragment() {
-        Fragment fragment = getFragmentManager().findFragmentById(R.id.container);
+        Fragment fragment = getCurrentFragment();
         if (fragment instanceof WalkMapFragment) { return (WalkMapFragment)fragment; }
         return null;
     }
@@ -118,50 +112,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showLocationDeniedActivity() {
-
+        showFragmentWithFlipAnimation(new WalkLocationDeniedFragment());
     }
 
     public void didTapFlipButton(View view) {
-        flipCard();
+        showFragmentWithFlipAnimation(new WalkLocationDeniedFragment());
     }
 
-    private void flipCard() {
-        int enterAnimation;
-        int exitAnimation;
-        Fragment fragment;
+    // Show fragments
+    // ----------------------
 
-        if (mShowingBack) {
-            enterAnimation = R.animator.flip_top_in;
-            exitAnimation = R.animator.flip_top_out;
-            fragment = new WalkMapFragment();
-        } else {
-            enterAnimation = R.animator.flip_bottom_in;
-            exitAnimation = R.animator.flip_bottom_out;
-            fragment = new CardBackFragment();
-        }
-
-        mShowingBack = !mShowingBack;
+    private void showFragmentWithFlipAnimation(Fragment fragment) {
+        WalkAnimation animation = getNextAnimation();
 
         getFragmentManager()
             .beginTransaction()
-            .setCustomAnimations(enterAnimation, exitAnimation, 0, 0)
+            .setCustomAnimations(animation.enter, animation.exit, 0, 0)
             .replace(R.id.container, fragment)
             .commit();
     }
 
-    /**
-     * A fragment representing the back of the card.
-     */
-    public static class CardBackFragment extends Fragment {
-        public CardBackFragment() {
+    private WalkAnimation getNextAnimation() {
+        if (getCurrentFragment() instanceof WalkMapFragment) {
+            return new WalkAnimation(R.animator.flip_top_in, R.animator.flip_top_out);
+        } else {
+            return new WalkAnimation(R.animator.flip_bottom_in, R.animator.flip_bottom_out);
         }
+    }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_card_back, container, false);
-            WalkCameraDistance.setFragmentCameraDistance(view);
-            return view;
-        }
+    private Fragment getCurrentFragment() {
+        return getFragmentManager().findFragmentById(R.id.container);
     }
 }
