@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startGooglePlayServices() {
-        WalkGooglePlayServices.logGooglePlayServicesVersion(this);
-
         int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
 
         if (resultCode == ConnectionResult.SUCCESS) {
