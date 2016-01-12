@@ -103,6 +103,21 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
+    // Location denied fragment
+    // ----------------------
+
+    public void locationDenied_didTapOpenSettingsButton(View view) {
+        WalkLocationDeniedFragment fragment = getLocationDeniedFragment();
+        if (fragment == null) { return; }
+        fragment.didTapOpenSettings();
+    }
+
+    WalkLocationDeniedFragment getLocationDeniedFragment() {
+        Fragment fragment = getCurrentFragment();
+        if (fragment instanceof WalkLocationDeniedFragment) { return (WalkLocationDeniedFragment)fragment; }
+        return null;
+    }
+
     // Permissions
     // ----------------------
 
