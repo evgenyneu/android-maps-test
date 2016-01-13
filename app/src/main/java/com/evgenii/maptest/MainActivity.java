@@ -147,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
     // ----------------------
 
     private void showFragmentWithFlipAnimation(Fragment fragment) {
-        Log.d("ii", "showFragmentWithFlipAnimation");
         WalkAnimation animation = getNextAnimation();
 
         getFragmentManager()

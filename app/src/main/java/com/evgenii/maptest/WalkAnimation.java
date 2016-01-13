@@ -5,7 +5,7 @@ public class WalkAnimation {
     public int exit;
 
     public WalkAnimation(int enterAnimation, int exitAnimation) {
-        this.enter = enter;
-        this.exit = exit;
+        this.enter = enterAnimation;
+        this.exit = exitAnimation;
     }
 }
