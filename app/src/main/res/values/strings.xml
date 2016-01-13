@@ -4,9 +4,9 @@
     <string name="title_activity_map_container">MapContainerActivity</string>
     <string name="location_denied_message">"Walk to Circle" needs access to your location in order to notify you when you reach a circle on the map.
         \n\nYour location info never leaves your phone and stays private.
-        \n\nPlease enable location permission in Settings > Apps > Walk to Circle > Permissions.
+        \n\nPlease enable location permission in the app settings.
     </string>
-    <string name="location_denied_open_settings_button">Open Settings</string>
+    <string name="location_denied_open_settings_button">Open app settings</string>
 
     <string name="dialog_button_ok">OK</string>
 

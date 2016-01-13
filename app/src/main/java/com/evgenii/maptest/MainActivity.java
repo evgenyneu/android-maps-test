@@ -4,13 +4,11 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.evgenii.maptest.Fragments.WalkLocationDeniedFragment;
 import com.evgenii.maptest.Fragments.WalkMapFragment;
-import com.evgenii.maptest.Utils.WalkCameraDistance;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -35,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
         registerApiClientCallback();
         registerLocationPermissionCallback();
-        WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
     }
 
     @Override
@@ -43,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         startGooglePlayServices();
+        WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
     }
 
     private void startGooglePlayServices() {
@@ -63,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         WalkGoogleApiClient.getInstance().didConnectCallback = new Runnable() {
             @Override
             public void run() {
+                showMapFragment();
                 reloadMap();
                 WalkLocationService.getInstance().startLocationUpdates();
             }
@@ -73,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         WalkLocationPermissions.getInstance().didGrantCallback = new Runnable() {
             @Override
             public void run() {
+                showMapFragment();
                 reloadMap();
                 WalkLocationService.getInstance().startLocationUpdates();
             }
@@ -95,6 +95,11 @@ public class MainActivity extends AppCompatActivity {
         if (map != null) {
             map.enableMyLocationAndZoom();
         }
+    }
+
+    void showMapFragment() {
+        if (getMapFragment() != null) { return; } // Already showing map
+        showFragmentWithFlipAnimation(new WalkMapFragment());
     }
 
     WalkMapFragment getMapFragment() {
@@ -131,13 +136,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void didTapFlipButton(View view) {
-        showFragmentWithFlipAnimation(new WalkLocationDeniedFragment());
+        if (getMapFragment() == null) {
+            showFragmentWithFlipAnimation(new WalkMapFragment());
+        } else {
+            showFragmentWithFlipAnimation(new WalkLocationDeniedFragment());
+        }
     }
 
     // Show fragments
     // ----------------------
 
     private void showFragmentWithFlipAnimation(Fragment fragment) {
+        Log.d("ii", "showFragmentWithFlipAnimation");
         WalkAnimation animation = getNextAnimation();
 
         getFragmentManager()
