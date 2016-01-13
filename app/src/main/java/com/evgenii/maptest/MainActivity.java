@@ -38,9 +38,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         startGooglePlayServices();
-        WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
+
+        if (WalkLocationPermissions.getInstance().hasLocationPermission()) {
+            if (getLocationDeniedFragment() != null) {
+                showMapFragment();
+            }
+        } else {
+            if (WalkLocationPermissions.getInstance().shouldShowRequestPermissionRationale(this)) {
+                Log.d("ii", "shouldShowRequestPermissionRationale");
+                showLocationDeniedFragment();
+            } else {
+                Log.d("ii", "requestLocationPermissionIfNotGranted");
+                WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
+            }
+        }
     }
 
     private void startGooglePlayServices() {
@@ -61,9 +73,11 @@ public class MainActivity extends AppCompatActivity {
         WalkGoogleApiClient.getInstance().didConnectCallback = new Runnable() {
             @Override
             public void run() {
-                showMapFragment();
-                reloadMap();
-                WalkLocationService.getInstance().startLocationUpdates();
+                if (WalkLocationPermissions.getInstance().hasLocationPermission()) {
+                    showMapFragment();
+                    reloadMap();
+                    WalkLocationService.getInstance().startLocationUpdates();
+                }
             }
         };
     }
@@ -81,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
         WalkLocationPermissions.getInstance().didDenyCallback = new Runnable() {
             @Override
             public void run() {
-                showLocationDeniedActivity();
+                Log.d("ii", "location denied");
+                showLocationDeniedFragment();
             }
         };
     }
@@ -97,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void showMapFragment() {
+    private void showMapFragment() {
         if (getMapFragment() != null) { return; } // Already showing map
         showFragmentWithFlipAnimation(new WalkMapFragment());
     }
@@ -131,15 +146,15 @@ public class MainActivity extends AppCompatActivity {
         WalkLocationPermissions.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    private void showLocationDeniedActivity() {
+    private void showLocationDeniedFragment() {
         showFragmentWithFlipAnimation(new WalkLocationDeniedFragment());
     }
 
     public void didTapFlipButton(View view) {
         if (getMapFragment() == null) {
-            showFragmentWithFlipAnimation(new WalkMapFragment());
+            showMapFragment();
         } else {
-            showFragmentWithFlipAnimation(new WalkLocationDeniedFragment());
+            showLocationDeniedFragment();
         }
     }
 
@@ -147,6 +162,12 @@ public class MainActivity extends AppCompatActivity {
     // ----------------------
 
     private void showFragmentWithFlipAnimation(Fragment fragment) {
+        Fragment currentFragment = getCurrentFragment();
+
+        if (currentFragment != null && currentFragment.getClass().equals(fragment.getClass())) {
+            return;
+        }
+
         WalkAnimation animation = getNextAnimation();
 
         getFragmentManager()
