@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         registerLocationPermissionCallback();
 
         if (!WalkLocationPermissions.getInstance().shouldShowRequestPermissionRationale(this)) {
-            Log.d("ii", "requestLocationPermissionIfNotGranted 2");
+            // Request location permission if we are not going to show locatino denied screen in onResume
             WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
         }
     }
@@ -43,20 +43,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("ii", "onResume");
         startGooglePlayServices();
 
         if (WalkLocationPermissions.getInstance().hasLocationPermission()) {
             if (getLocationDeniedFragment() != null) {
                 showMapFragment();
             }
-        } else {
-            if (WalkLocationPermissions.getInstance().shouldShowRequestPermissionRationale(this)) {
-                Log.d("ii", "shouldShowRequestPermissionRationale");
-                showLocationDeniedFragment();
-            } else {
-                //WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
-            }
+        } else if (WalkLocationPermissions.getInstance().shouldShowRequestPermissionRationale(this)) {
+            showLocationDeniedFragment();
         }
     }
 
@@ -100,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
         WalkLocationPermissions.getInstance().didDenyCallback = new Runnable() {
             @Override
             public void run() {
-                Log.d("ii", "location denied");
                 showLocationDeniedFragment();
             }
         };
@@ -176,8 +169,6 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment != null && currentFragment.getClass().equals(fragment.getClass())) {
             return;
         }
-
-        Log.d("ii", "showFragmentWithFlipAnimation");
 
         WalkAnimation animation = getNextAnimation();
 
