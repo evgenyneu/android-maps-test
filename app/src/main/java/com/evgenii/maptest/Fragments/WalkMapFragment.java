@@ -33,7 +33,7 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_walk_map, container, false);
+        View view = inflater.inflate(R.layout.map_fragment, container, false);
         WalkCameraDistance.setFragmentCameraDistance(view);
         initMap();
         return view;
@@ -71,11 +71,9 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
     void initMap() {
         com.google.android.gms.maps.MapFragment mapFragment =
                 (com.google.android.gms.maps.MapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.walk_map);
+                .findFragmentById(R.id.map);
 
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
+        mapFragment.getMapAsync(this);
     }
 
     /**
