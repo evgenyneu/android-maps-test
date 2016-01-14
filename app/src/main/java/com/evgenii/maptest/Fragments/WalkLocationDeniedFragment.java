@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,6 @@ import com.evgenii.maptest.Utils.WalkCameraDistance;
 import com.evgenii.maptest.Utils.WalkView;
 import com.evgenii.maptest.WalkApplication;
 import com.evgenii.maptest.WalkLocationPermissions;
-import com.evgenii.maptest.WalkLocationService;
 
 public class WalkLocationDeniedFragment extends Fragment {
     @Override
@@ -39,7 +37,7 @@ public class WalkLocationDeniedFragment extends Fragment {
 
         if (requestPermissionGroup == null || enablePermissionGroup == null) { return; }
 
-        boolean requestPermission = WalkLocationPermissions.getInstance().shouldShowRequestPermissionRationale(activity);
+        boolean requestPermission = WalkLocationPermissions.getInstance().shouldShowLocationDeniedScreen(activity);
 
         WalkView.toggleView(requestPermissionGroup, requestPermission);
         WalkView.toggleView(enablePermissionGroup, !requestPermission);

@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.evgenii.maptest.Fragments.WalkLocationDeniedFragment;
@@ -34,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         registerApiClientCallback();
         registerLocationPermissionCallback();
 
-        if (!WalkLocationPermissions.getInstance().shouldShowRequestPermissionRationale(this)) {
+        if (!WalkLocationPermissions.getInstance().shouldShowLocationDeniedScreen(this)) {
             // Request location permission if we are not going to show locatino denied screen in onResume
             WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
         }
@@ -46,10 +45,11 @@ public class MainActivity extends AppCompatActivity {
         startGooglePlayServices();
 
         if (WalkLocationPermissions.getInstance().hasLocationPermission()) {
+            // Show normal screen if we have location permission and showing "location denied" screen
             if (getLocationDeniedFragment() != null) {
                 showMapFragment();
             }
-        } else if (WalkLocationPermissions.getInstance().shouldShowRequestPermissionRationale(this)) {
+        } else if (WalkLocationPermissions.getInstance().shouldShowLocationDeniedScreen(this)) {
             showLocationDeniedFragment();
         }
     }
@@ -121,6 +121,14 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
+    public void didTapMapButton(View view) {
+        if (getMapFragment() == null) {
+            showMapFragment();
+        } else {
+            showLocationDeniedFragment();
+        }
+    }
+
     // Location denied fragment
     // ----------------------
 
@@ -150,14 +158,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void showLocationDeniedFragment() {
         showFragmentWithFlipAnimation(new WalkLocationDeniedFragment());
-    }
-
-    public void didTapFlipButton(View view) {
-        if (getMapFragment() == null) {
-            showMapFragment();
-        } else {
-            showLocationDeniedFragment();
-        }
     }
 
     // Show fragments

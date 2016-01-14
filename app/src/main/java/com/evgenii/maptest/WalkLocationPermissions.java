@@ -26,7 +26,7 @@ public class WalkLocationPermissions {
     public Runnable didGrantCallback;
     public Runnable didDenyCallback;
 
-    public boolean shouldShowRequestPermissionRationale(Activity activity) {
+    public boolean shouldShowLocationDeniedScreen(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!hasLocationPermission()) {
                 return activity.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION);

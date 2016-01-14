@@ -39,13 +39,6 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
         return view;
     }
 
-    public void didTapButton(View view) {
-        //Intent intent = new Intent(this, LocationDeeniedActivity.class);
-        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        //startActivity(intent);
-        //finishAffinity();
-    }
-
     // Create markers
     // ----------------------
 
