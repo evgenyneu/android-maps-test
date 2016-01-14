@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
 
 public class WalkLocationPermissions {
     private static final String[] INITIAL_PERMS={
@@ -45,7 +44,7 @@ public class WalkLocationPermissions {
     }
 
     public boolean hasLocationPermission() {
-        return ContextCompat.checkSelfPermission(WalkApplication.getAppContext(),
+        return WalkApplication.getAppContext().checkSelfPermission(
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
