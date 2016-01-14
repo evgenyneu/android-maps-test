@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginTop="@dimen/fragment_top_margin"
+    android:layout_marginTop="@dimen/margin_x_large"
     android:layout_marginStart="@dimen/text_horizontal_margin"
     android:layout_marginEnd="@dimen/text_horizontal_margin">
 
@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/location_denied_request_permission_group"
-        android:layout_marginTop="@dimen/fragment_top_margin">
+        android:layout_marginTop="@dimen/margin_large">
 
         <Button
             android:layout_width="wrap_content"
@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/location_denied_enable_permission_group"
-        android:layout_marginTop="@dimen/fragment_top_margin">
+        android:layout_marginTop="@dimen/margin_large">
 
         <TextView
             android:textSize="@dimen/font_size_body"
@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/fragment_top_margin"
+            android:layout_marginTop="@dimen/margin_large"
             android:text="@string/location_denied_open_settings_button"
             android:onClick="locationDenied_didTapOpenSettingsButton" />
     </LinearLayout>

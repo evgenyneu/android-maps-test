@@ -33,11 +33,17 @@ public class MainActivity extends AppCompatActivity {
 
         registerApiClientCallback();
         registerLocationPermissionCallback();
+
+        if (!WalkLocationPermissions.getInstance().shouldShowRequestPermissionRationale(this)) {
+            Log.d("ii", "requestLocationPermissionIfNotGranted 2");
+            WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("ii", "onResume");
         startGooglePlayServices();
 
         if (WalkLocationPermissions.getInstance().hasLocationPermission()) {
@@ -49,8 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("ii", "shouldShowRequestPermissionRationale");
                 showLocationDeniedFragment();
             } else {
-                Log.d("ii", "requestLocationPermissionIfNotGranted");
-                WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
+                //WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
             }
         }
     }
@@ -171,6 +176,8 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment != null && currentFragment.getClass().equals(fragment.getClass())) {
             return;
         }
+
+        Log.d("ii", "showFragmentWithFlipAnimation");
 
         WalkAnimation animation = getNextAnimation();
 
