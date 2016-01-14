@@ -132,6 +132,10 @@ public class MainActivity extends AppCompatActivity {
         fragment.didTapOpenSettings();
     }
 
+    public void locationDenied_didTapRequestLocationPermissionButton(View view) {
+        WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
+    }
+
     WalkLocationDeniedFragment getLocationDeniedFragment() {
         Fragment fragment = getCurrentFragment();
         if (fragment instanceof WalkLocationDeniedFragment) { return (WalkLocationDeniedFragment)fragment; }
