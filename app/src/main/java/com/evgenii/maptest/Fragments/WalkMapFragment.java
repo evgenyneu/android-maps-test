@@ -73,9 +73,7 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
                 (com.google.android.gms.maps.MapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
 
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
+        mapFragment.getMapAsync(this);
     }
 
     /**
