@@ -5,6 +5,7 @@ import com.evgenii.maptest.WalkConstants;
 import com.evgenii.maptest.WalkGoogleApiClient;
 import com.evgenii.maptest.WalkLocationDetector;
 import com.evgenii.maptest.WalkLocationPermissions;
+import com.evgenii.maptest.WalkLocationService;
 import com.evgenii.maptest.WalkPosition;
 import com.google.android.gms.maps.GoogleMap;
 import android.app.Fragment;
@@ -27,10 +28,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
+public class WalkMapFragment extends Fragment implements OnMapReadyCallback,
+        com.google.android.gms.location.LocationListener {
 
     private GoogleMap mMap;
-    private boolean mDidZoomToCurrentLocation = false;
+    private Location lastLocationZoom;
+    private WalkLocationService locationService = new WalkLocationService();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,14 +41,20 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
 
         View view = inflater.inflate(R.layout.map_fragment, container, false);
         WalkCameraDistance.setFragmentCameraDistance(view);
+        initMap();
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        startLocationUpdates();
+    }
 
-        initMap();
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopLocationUpdates();
     }
 
     // Create markers
@@ -96,7 +105,6 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.d("ii", "onMapReady");
         mMap = googleMap;
         enableMyLocationAndZoom();
         mMap.getUiSettings().setMapToolbarEnabled(false);
@@ -105,7 +113,7 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
     public void enableMyLocationAndZoom() {
         if (WalkLocationPermissions.getInstance().hasLocationPermission()) {
             enableMyLocation();
-            zoomToCurrentLocation();
+            startLocationUpdates();
         }
     }
 
@@ -119,7 +127,7 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private static Location getLastLocation() {
+    private static Location getLastLocation_disabled() {
         if (WalkGoogleApiClient.isConnected() && WalkLocationPermissions.getInstance().hasLocationPermission()) {
             return LocationServices.FusedLocationApi.getLastLocation(
                     WalkGoogleApiClient.getInstance().getClient());
@@ -128,19 +136,44 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
         return null;
     }
 
-    private void zoomToCurrentLocation() {
-        Location lastLocation = getLastLocation();
-
-        if (lastLocation == null) { return; }
+    private void zoomToCurrentLocation(Location location) {
         if (mMap == null) { return; }
 
-        if (mDidZoomToCurrentLocation) { return; } // Zoom only once
-        mDidZoomToCurrentLocation = true;
+        if (lastLocationZoom != null) {
+            // Skip zoom if last location zoom was nearby
+            if (lastLocationZoom.distanceTo(location) < 300) { return; }
+        }
 
-        LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+        Log.d("ii", "MAP zoomToCurrentLocation");
+
+
+        lastLocationZoom = location;
+
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
 
         createMarkers();
+    }
+
+    // Location
+    // ----------------------
+
+    void startLocationUpdates() {
+        Log.d("ii", "MAP startLocationUpdates");
+        locationService.startLocationUpdates(this, 1000);
+    }
+
+    void stopLocationUpdates() {
+        locationService.stopLocationUpdates();
+    }
+
+    // com.google.android.gms.location.LocationListener
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d("ii", "MAP onLocationChanged");
+
+        zoomToCurrentLocation(location);
+        if (lastLocationZoom != null) { stopLocationUpdates(); }
     }
 }

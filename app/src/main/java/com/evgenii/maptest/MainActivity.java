@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
                 if (WalkLocationPermissions.getInstance().hasLocationPermission()) {
                     showMapFragment();
                     reloadMap();
-                    WalkLocationService.getInstance().startLocationUpdates();
                 }
             }
         };
@@ -87,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 showMapFragment();
                 reloadMap();
-                WalkLocationService.getInstance().startLocationUpdates();
             }
         };
 
