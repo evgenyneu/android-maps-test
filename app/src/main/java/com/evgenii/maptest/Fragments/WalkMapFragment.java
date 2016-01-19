@@ -1,5 +1,6 @@
 package com.evgenii.maptest.Fragments;
 import com.evgenii.maptest.R;
+import com.evgenii.maptest.Utils.WalkFragments;
 import com.evgenii.maptest.WalkConstants;
 import com.evgenii.maptest.WalkGoogleApiClient;
 import com.evgenii.maptest.WalkLocationDetector;
@@ -10,6 +11,7 @@ import android.app.Fragment;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,10 +35,17 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.map_fragment, container, false);
         WalkCameraDistance.setFragmentCameraDistance(view);
-        initMap();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        initMap();
     }
 
     // Create markers
@@ -70,9 +79,7 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
 
     void initMap() {
         com.google.android.gms.maps.MapFragment mapFragment =
-                (com.google.android.gms.maps.MapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.map);
-
+                (com.google.android.gms.maps.MapFragment) WalkFragments.getChildFragment(this, R.id.map);
         mapFragment.getMapAsync(this);
     }
 
@@ -89,6 +96,7 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d("ii", "onMapReady");
         mMap = googleMap;
         enableMyLocationAndZoom();
         mMap.getUiSettings().setMapToolbarEnabled(false);
