@@ -2,6 +2,7 @@ package com.evgenii.maptest.Utils;
 
 import android.location.Location;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
 public class WalkLocation {
@@ -11,5 +12,10 @@ public class WalkLocation {
         location.setLongitude(latLng.longitude);
 
         return location;
+    }
+
+    public static Location getMapCenter(GoogleMap map) {
+        LatLng latLng = map.getCameraPosition().target;
+        return locationFromLatLng(latLng);
     }
 }

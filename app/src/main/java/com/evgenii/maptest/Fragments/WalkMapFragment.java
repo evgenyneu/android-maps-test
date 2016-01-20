@@ -1,6 +1,7 @@
 package com.evgenii.maptest.Fragments;
 import com.evgenii.maptest.R;
 import com.evgenii.maptest.Utils.WalkFragments;
+import com.evgenii.maptest.Utils.WalkLocation;
 import com.evgenii.maptest.WalkConstants;
 import com.evgenii.maptest.WalkGoogleApiClient;
 import com.evgenii.maptest.WalkLocationDetector;
@@ -32,7 +33,6 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback,
         com.google.android.gms.location.LocationListener {
 
     private GoogleMap mMap;
-    private Location lastLocationZoom;
     private WalkLocationService locationService = new WalkLocationService();
 
     @Override
@@ -48,7 +48,7 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback,
     @Override
     public void onResume() {
         super.onResume();
-        startLocationUpdates();
+        zoomToLastLocationAndStartLocationUpdated();
     }
 
     @Override
@@ -107,13 +107,14 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         enableMyLocationAndZoom();
+        createMarkers();
         mMap.getUiSettings().setMapToolbarEnabled(false);
     }
 
     public void enableMyLocationAndZoom() {
         if (WalkLocationPermissions.getInstance().hasLocationPermission()) {
             enableMyLocation();
-            startLocationUpdates();
+            zoomToLastLocationAndStartLocationUpdated();
         }
     }
 
@@ -127,7 +128,7 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
-    private static Location getLastLocation_disabled() {
+    private static Location getLastLocation() {
         if (WalkGoogleApiClient.isConnected() && WalkLocationPermissions.getInstance().hasLocationPermission()) {
             return LocationServices.FusedLocationApi.getLastLocation(
                     WalkGoogleApiClient.getInstance().getClient());
@@ -136,24 +137,46 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback,
         return null;
     }
 
-    private void zoomToCurrentLocation(Location location) {
+    private void zoomToLastLocationAndStartLocationUpdated() {
+        Log.d("ii", "zoomToLastLocationAndStartLocationUpdated");
+
+        // 1. First, get last location and zoom the map there.
+        // Last location is returned immediately but can be null.
+        // -------------
+
+        Location lastLocation = getLastLocation();
+
+        if (lastLocation != null) {
+            zoomMapToLocation(lastLocation);
+        }
+
+        // 2. Start location updates.
+        // Zoom the map to this updated location if it is significantly different from last location.
+        // -------------
+
+        startLocationUpdates();
+    }
+
+    private void zoomMapToLocation(Location location) {
         if (mMap == null) { return; }
 
-        if (lastLocationZoom != null) {
-            // Skip zoom if last location zoom was nearby
-            if (lastLocationZoom.distanceTo(location) < 300) { return; }
+        // Skip zoom if map is already centered correctly
+        Location mapCenter =  WalkLocation.getMapCenter(mMap);
+        if (mapCenter.distanceTo(location) < 150) {
+            float currentZoom = mMap.getCameraPosition().zoom;
+            Log.d("ii", "Current zoom " + currentZoom);
+            // Skip zoom if already zoomed
+            if (Math.abs(WalkConstants.mapInitialZoom - currentZoom) < 1.5) {
+                Log.d("ii", "MAP zoomToCurrentLocation ALREADY ZOOMED");
+                return;
+            }
         }
 
         Log.d("ii", "MAP zoomToCurrentLocation");
 
-
-        lastLocationZoom = location;
-
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
-
-        createMarkers();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, WalkConstants.mapInitialZoom));
     }
 
     // Location
@@ -173,7 +196,7 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback,
     public void onLocationChanged(Location location) {
         Log.d("ii", "MAP onLocationChanged");
 
-        zoomToCurrentLocation(location);
-        if (lastLocationZoom != null) { stopLocationUpdates(); }
+        zoomMapToLocation(location);
+        stopLocationUpdates();
     }
 }
