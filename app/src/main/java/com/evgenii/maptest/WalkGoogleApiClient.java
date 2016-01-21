@@ -26,6 +26,7 @@ public class WalkGoogleApiClient implements GoogleApiClient.ConnectionCallbacks,
     }
 
     public static boolean isConnected() {
+        if (WalkGoogleApiClient.getInstance().mGoogleApiClient == null) { return false; }
         return WalkGoogleApiClient.getInstance().mGoogleApiClient.isConnected();
     }
 
