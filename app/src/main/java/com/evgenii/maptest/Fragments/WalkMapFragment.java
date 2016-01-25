@@ -1,8 +1,6 @@
 package com.evgenii.maptest.Fragments;
 import com.evgenii.maptest.R;
-import com.evgenii.maptest.Utils.WalkFragments;
 import com.evgenii.maptest.Utils.WalkLocation;
-import com.evgenii.maptest.WalkAnimation;
 import com.evgenii.maptest.WalkConstants;
 import com.evgenii.maptest.WalkGoogleApiClient;
 import com.evgenii.maptest.WalkLocationDetector;
@@ -11,7 +9,6 @@ import com.evgenii.maptest.WalkLocationService;
 import com.evgenii.maptest.WalkPosition;
 import com.google.android.gms.maps.GoogleMap;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -90,13 +87,13 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback,
     // ----------------------
 
     void initMap() {
-
-        Prevent map fragment from disappearing:
-        http://stackoverflow.com/questions/14900738/nested-fragments-disappear-during-transition-animation
-
         MapFragment mapFragment =  MapFragment.newInstance();
+
         getChildFragmentManager().beginTransaction()
-                .replace(R.id.map, mapFragment).commit();
+            .setCustomAnimations(R.animator.keep_child_fragment, 0, 0, 0)
+            .add(R.id.map, mapFragment)
+            .commit();
+
         mapFragment.getMapAsync(this);
     }
 
