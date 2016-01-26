@@ -11,7 +11,7 @@
     <TextView
         android:textSize="@dimen/font_size_body"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/location_denied_message"/>
 
     <LinearLayout
@@ -26,7 +26,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/location_denied_request_permission_button"
-            android:onClick="locationDenied_didTapRequestLocationPermissionButton" />
+            android:onClick="locationDenied_didTapRequestLocationPermissionButton"
+            style="@style/WalkButtonStyle" />
     </LinearLayout>
 
     <LinearLayout
@@ -48,6 +49,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/margin_large"
             android:text="@string/location_denied_open_settings_button"
-            android:onClick="locationDenied_didTapOpenSettingsButton" />
+            android:onClick="locationDenied_didTapOpenSettingsButton"
+            style="@style/WalkButtonStyle" />
     </LinearLayout>
 </LinearLayout>

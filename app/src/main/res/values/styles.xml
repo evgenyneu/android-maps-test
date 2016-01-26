@@ -7,6 +7,12 @@
         <item name="android:statusBarColor">@color/colorStatusBar</item>
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="android:colorBackground">@color/windowBackground</item>
+        <item name="android:buttonStyle">@style/WalkButtonStyle</item>
+        <item name="colorButtonNormal">@color/buttonColor</item>
     </style>
 
+    <style name="WalkButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:backgroundTint">@color/buttonColor</item>
+        <item name="android:textColor">@color/buttonTextColor</item>
+    </style>
 </resources>

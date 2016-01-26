@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:onClick="didTapMapButton"
-        android:text="Flip" />
+        android:text="Flip"
+        style="@style/WalkButtonStyle" />
 
 </FrameLayout>
