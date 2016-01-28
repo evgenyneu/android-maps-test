@@ -10,9 +10,10 @@
 
     <TextView
         android:textSize="@dimen/font_size_body"
+        android:lineSpacingMultiplier="@dimen/line_spacing_multiplier_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/location_denied_message"/>
+        android:text="@string/location_denied_message" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -39,6 +40,7 @@
 
         <TextView
             android:textSize="@dimen/font_size_body"
+            android:lineSpacingMultiplier="@dimen/line_spacing_multiplier_body"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/location_denied_request_enable_permission"/>
