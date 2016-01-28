@@ -9,6 +9,8 @@
         <item name="android:colorBackground">@color/windowBackground</item>
         <item name="buttonStyle">@style/WalkButtonStyle</item>
         <item name="android:textViewStyle">@style/WalkTextViewStyle</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="WalkButtonStyle" parent="Widget.AppCompat.Button">

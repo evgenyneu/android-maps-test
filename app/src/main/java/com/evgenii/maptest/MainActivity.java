@@ -2,10 +2,13 @@ package com.evgenii.maptest;
 
 import android.app.Dialog;
 import android.app.Fragment;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.evgenii.maptest.Fragments.WalkLocationDeniedFragment;
 import com.evgenii.maptest.Fragments.WalkMapFragment;
@@ -38,6 +41,13 @@ public class MainActivity extends AppCompatActivity {
             // Request location permission if we are not going to show locatino denied screen in onResume
             WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
         }
+
+        Work on this
+
+//        Window window = getWindow();
+//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //window.setStatusBarColor(Color.parseColor("#4CAF50"));
     }
 
     @Override
