@@ -1,16 +1,16 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:statusBarColor">@color/colorStatusBar</item>
+        <!--<item name="android:statusBarColor">@color/colorStatusBar</item>-->
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="android:colorBackground">@color/windowBackground</item>
         <item name="buttonStyle">@style/WalkButtonStyle</item>
         <item name="android:textViewStyle">@style/WalkTextViewStyle</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <!--<item name="android:windowLightStatusBar">true</item>-->
     </style>
 
     <style name="WalkButtonStyle" parent="Widget.AppCompat.Button">

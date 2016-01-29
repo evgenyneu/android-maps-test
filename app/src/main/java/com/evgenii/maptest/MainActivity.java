@@ -41,13 +41,6 @@ public class MainActivity extends AppCompatActivity {
             // Request location permission if we are not going to show locatino denied screen in onResume
             WalkLocationPermissions.getInstance().requestLocationPermissionIfNotGranted(this);
         }
-
-        Work on this
-
-//        Window window = getWindow();
-//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        //window.setStatusBarColor(Color.parseColor("#4CAF50"));
     }
 
     @Override
