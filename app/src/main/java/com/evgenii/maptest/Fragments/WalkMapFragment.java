@@ -40,8 +40,8 @@ public class WalkMapFragment extends Fragment implements OnMapReadyCallback,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.map_fragment, container, false);
-        initMap();
         WalkCameraDistance.setFragmentCameraDistance(view);
+        initMap();
         return view;
     }
 
